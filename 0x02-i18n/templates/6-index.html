@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('home_title') }}</title>
+</head>
+<body style="margin:0; padding:0;">
+	<h1>{{ _('home_header') }}</h1>
+    	{% if user %}
+		<p>{{ _('logged in as', username=g.user['name']) }}</p>
+	{% else %}
+		<p>{{ _('Not logged in') }}</p>
+	{% endif %}
+</body>
+</html>

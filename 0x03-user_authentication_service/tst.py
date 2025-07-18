@@ -11,11 +11,16 @@ my_db = DB()
 my_auth = Auth()
 email = 'test@test.com'
 hashed_password = "hashedPwd"
-user = my_db.add_user(email, hashed_password)
-print(user.id)
+user = my_auth.register_user(email, hashed_password)
+print(f"user created with id of {user.id}")
 try:
-    my_db.update_user(user.id, session_id="fff")
-    print(user.session_id)
-    print("Password updated")
+    session_id = my_auth.create_session(user.email)
+    reset_token = my_auth.get_reset_password_token(user.email)
+    print("user.hashed_password:", user.hashed_password)
+    print("user.reset_token:", user.reset_token)
+    my_auth.update_password(reset_token, "abcd")
+    print("user.hashed_pass:", user.hashed_password)
+    print("user.reset_token:", user.reset_token)
 except ValueError:
     print("Error")
+

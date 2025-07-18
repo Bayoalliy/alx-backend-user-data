@@ -7,6 +7,8 @@ from sqlalchemy.exc import NoResultFound, InvalidRequestError
 from sqlalchemy.orm.session import Session
 from user import Base, User
 import bcrypt
+
+
 class DB:
     """DB class
     """
@@ -38,14 +40,11 @@ class DB:
     def find_user_by(self, **kwargs):
         """find a user with an attribute
         """
-        print(kwargs)
         try:
             user = self._session.query(User).filter_by(**kwargs).one()
         except NoResultFound:
-            print("No result found")
             return
         except InvalidRequestError:
-            print("invalid requeat")
             return
         return user
 
@@ -57,6 +56,6 @@ class DB:
             for attr, val in kwargs.items():
                 if attr not in User.__table__.columns:
                     raise ValueError
-                user.attr = val
+                setattr(user, attr, val)
             self._session.commit()
         return None

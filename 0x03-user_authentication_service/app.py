@@ -2,7 +2,7 @@
 """
 A Basic flask app
 """
-from flask import Flask, jsonify, request, make_response, abort
+from flask import Flask, jsonify, request, make_response, abort, redirect
 from auth import Auth
 
 
@@ -40,11 +40,11 @@ def login():
     
 @app.route("/sessions", methods=['DELETE'], strict_slashes=False)
 def logout():
-    session_id = request.cookie.get('session_id')
+    session_id = request.cookies.get('session_id')
     user = AUTH.get_user_from_session_id(session_id)
     if user:
         AUTH.destroy_session(user.id)
-        root_request()
+        return redirect("/")
     abort(403)
 
 
@@ -60,11 +60,21 @@ def profile():
 def get_reset_password_token():
     email = request.form.get('email')
     try:
-        user  = AUTH.get_reset_password_token(email)
+        reset_token = AUTH.get_reset_password_token(email)
     except ValueError:
         abort(403)
-    return jsonify({"email": user.email, "reset_token": user.reset_token})
-        
+    return jsonify({"email": email, "reset_token": reset_token})
+
+@app.route("/reset_password", methods=['PUT'], strict_slashes=False)
+def update_password():
+    email = request.form.get('email')
+    reset_token = request.form.get('reset_token')
+    password = request.form.get('password')
+    try:
+        AUTH.update_password(reset_token, password)
+    except ValueError:
+        abort(403)
+    return jsonify({"email": email, "message": "Password updated"})
 
 
 if __name__ == "__main__":
